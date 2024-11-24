@@ -13,9 +13,10 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
   uv sync --frozen --no-dev --no-python-downloads
 
-
 # Then, use a final image without uv
 FROM python:3.11-bookworm
+
+ENV CMAKE_ARGS="-DLLAMA_NATIVE=OFF -DGGML_NATIVE=OFF -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS -DGGML_AVX512=OFF -DGGML_AVX512_VNNI=OFF -DGGML_AVX512_VBMI=OFF -DGGML_AVX512_BF16=OFF"
 
 ARG HANDLER
 ENV HANDLER=${HANDLER} PYTHONPATH=.

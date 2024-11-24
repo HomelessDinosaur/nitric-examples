@@ -1,14 +1,14 @@
 # The nitric provider to use
-provider: nitric/aws@latest
-region:
+provider: nitric/aws@1.14.0
+region: us-east-1
 config:
   # How services will be deployed by default, if you have other services not running models
   # you can add them here too so they don't use the same configuration
   default:
     lambda:
-      # Set the memory to 6GB to handle the model, this automatically sets additional CPU allocation
-      memory: 6144
+      # Set the memory to 8GB to handle the model and vectors, this automatically sets additional CPU allocation
+      memory: 8192
       # Set a timeout of 30 seconds (this is the most API Gateway will wait for a response)
-      timeout: 30
+      timeout: 900
       # We add more storage to the lambda function, so it can store the model
       ephemeral-storage: 1024

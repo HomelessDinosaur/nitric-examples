@@ -4,3 +4,4 @@ nitric-spec.json
 __pycache__
 model/
 query_engine_vectors/
+vector_model/
