@@ -6,18 +6,17 @@ from common.model_parameters import ModelParameters
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings
 from huggingface_hub import snapshot_download
 
-os.environ['HF_HOME'] = ModelParameters.embed_cache_folder
-os.environ['TRANSFORMERS_CACHE'] = ModelParameters.embed_cache_folder
 
-def build_query_engine(input_dir_path = "../docs/docs"):
+def build_query_engine():
     params = ModelParameters()
 
     Settings.llm = params.llm
     Settings.embed_model = params.embed_model
+    Settings.tokenizer = params.tokenizer
 
     # load data
     loader = SimpleDirectoryReader(
-        input_dir = input_dir_path,
+        input_dir = "../docs/docs",
         required_exts=[".mdx"],
         recursive=True
     )
@@ -28,10 +27,9 @@ def build_query_engine(input_dir_path = "../docs/docs"):
     index.storage_context.persist(params.persist_dir)
 
 
-# curl -OL https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf
 def download_embed_model():
     print(f"Downloading embed model to {ModelParameters.embed_cache_folder}")
-
+    
     dir = snapshot_download("BAAI/bge-large-en-v1.5",
         local_dir= ModelParameters.embed_cache_folder,
         allow_patterns=[
@@ -49,12 +47,18 @@ def download_embed_model():
 def download_llm():
     print(f"Downloading llm to {ModelParameters.llm_cache_folder}")
 
-    os.mkdir(ModelParameters.llm_cache_folder)
-
     llm_name = "Llama-3.2-1B-Instruct"
     llm_path = f"{llm_name}-Q4_K_M.gguf"
+    llm_download_location = f"{ModelParameters.llm_cache_folder}/{llm_path}"
+
+    if os.path.isfile(llm_download_location):
+        print("Model already exists.")
+        return
+    
+    os.mkdir(ModelParameters.llm_cache_folder)
+
     llm_download_url = f"https://huggingface.co/bartowski/{llm_name}-GGUF/resolve/main/{llm_path}"
-    llm_dir = urlretrieve(llm_download_url, f"{ModelParameters.llm_cache_folder}/{llm_path}")
+    llm_dir = urlretrieve(llm_download_url, llm_download_location)
 
     print(f"Download model to {llm_dir[0]}")
 

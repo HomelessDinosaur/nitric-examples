@@ -1,9 +1,14 @@
 name: llama-rag
 services:
-  - basedir: ""
-    match: services/*.py
+  - match: services/chat.py
     runtime: python
-    start: uv run watchmedo auto-restart -p *.py --no-restart-on-command-exit -R uv run $SERVICE_PATH
+    start: uv run $SERVICE_PATH
+  - match: services/subscriber.py
+    runtime: model
+    start: uv run $SERVICE_PATH
+
 runtimes:
   python:
     dockerfile: ./python.dockerfile
+  model:
+    dockerfile: ./model.dockerfile
